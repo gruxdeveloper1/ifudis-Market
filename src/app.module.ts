@@ -13,11 +13,11 @@ import { CategoriesModule } from './categorias/categories.module';
   imports: [
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'localhost',
-      port: 5434,
-      username: 'postgres',
-      password: '1234',
-      database: 'ifudisM',
+      host: 'dpg-csrncmd2ng1s738bg5i0-a',
+      port: 5432,
+      username: 'ifudism_user',
+      password: 'QD5TpRQKyQPhpbNzhwPaCdgs5qIObMK1',
+      database: 'ifudism',
       entities: [PreRegistro, EstatusCorreo, Category],
       autoLoadEntities: true, // Carga las entidades automáticamente
       synchronize: true, // Sincroniza la base de datos con las entidades (desactiva en producción)
