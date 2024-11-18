@@ -1,39 +1,62 @@
 // src/pre-registro/dto/pre-registro.dto.ts
-import { IsString, IsArray, IsInt, IsEmail } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  IsEmail,
+  IsBoolean,
+  IsNumber,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreatePreRegistroDto {
-  @ApiProperty()
+  @ApiProperty({ description: 'Nombres del usuario', example: 'Juan' })
   @IsString()
   nombres: string;
 
-  @ApiProperty()
+  @ApiProperty({ description: 'Apellidos del usuario', example: 'Pérez' })
   @IsString()
   apellidos: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    description: 'Correo electrónico del usuario',
+    example: 'juan.perez@example.com',
+  })
   @IsEmail()
   email: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    description: 'Teléfono del usuario',
+    example: '123456789',
+    required: false,
+  })
+  @IsOptional()
   @IsString()
-  telefono: string;
+  telefono?: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    description: 'Nombre de la empresa',
+    example: 'MiEmpresa',
+    required: false,
+  })
+  @IsOptional()
   @IsString()
-  empresa: string;
+  empresa?: string;
 
-  @ApiProperty()
-  @IsString()
-  estatus_correo: string;
+  @ApiProperty({
+    description: 'ID del estatus de correo',
+    example: 1,
+    required: false,
+  })
+  @IsOptional()
+  @IsNumber()
+  estatus_correo?: number;
 
-  @ApiProperty()
-  @IsString()
-  estatus: string;
-
-  // Campo para las categorías seleccionadas
-  @ApiProperty()
-  @IsArray()
-  @IsInt({ each: true }) // Validamos que cada elemento del array sea un número entero
-  categorias: number[]; // Lista de IDs de las categorías seleccionadas
+  @ApiProperty({
+    description: 'Estatus del registro false que no ha sido aprobado',
+    example: false,
+    required: false,
+  })
+  @IsOptional()
+  @IsBoolean()
+  estatus?: boolean;
 }

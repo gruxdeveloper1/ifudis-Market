@@ -1,42 +1,48 @@
 import { Module, ValidationPipe } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
-import { PreRegistro } from './entities/pre-registro.entity';
-import { EstatusCorreo } from './entities/estatus-correo.entity';
-import { Category } from './entities/category.entity';
 import { PreRegistroModule } from './preRegistro/pre-registro.module';
+import { CategoriaProveedorModule } from './categoriaProveedor/categoria-proveedor.module';
 import { HttpExceptionFilter } from './exceptions/http-exception.filter';
 import { APP_FILTER, APP_PIPE } from '@nestjs/core';
 import { CategoriesModule } from './categorias/categories.module';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: 'dpg-csrncmd2ng1s738bg5i0-a',
-      port: 5432,
-      username: 'ifudism_user',
-      password: 'QD5TpRQKyQPhpbNzhwPaCdgs5qIObMK1',
-      database: 'ifudism',
-      entities: [PreRegistro, EstatusCorreo, Category],
-      autoLoadEntities: true, // Carga las entidades automáticamente
-      synchronize: true, // Sincroniza la base de datos con las entidades (desactiva en producción)
+    ConfigModule.forRoot({
+      isGlobal: true, // Hace que ConfigModule esté disponible en toda la aplicación
+      envFilePath: '.env', // Especifica el archivo de variables de entorno
+    }),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        type: 'postgres',
+        host: configService.get<string>('DATABASE_HOST'),
+        port: configService.get<number>('DATABASE_PORT'),
+        username: configService.get<string>('DATABASE_USER'),
+        password: configService.get<string>('DATABASE_PASSWORD'),
+        database: configService.get<string>('DATABASE_NAME'),
+        synchronize: true, // ¡Ojo! Usar `synchronize: true` solo en desarrollo
+        autoLoadEntities: true,
+      }),
     }),
     PreRegistroModule,
     UsersModule,
     CategoriesModule,
+    CategoriaProveedorModule,
   ],
   providers: [
     // Configuración global de validación con ValidationPipe
     {
       provide: APP_PIPE,
-      useClass: ValidationPipe, // Esta línea habilita la validación global de DTOs
+      useClass: ValidationPipe,
     },
-
     // Configuración global para el filtro de excepciones personalizado
     {
       provide: APP_FILTER,
-      useClass: HttpExceptionFilter, // Aquí defines el filtro de excepciones
+      useClass: HttpExceptionFilter,
     },
   ],
 })
