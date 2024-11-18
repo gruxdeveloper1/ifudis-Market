@@ -1,16 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class EmailService {
   private transporter;
 
-  constructor() {
+  constructor(private readonly configService: ConfigService) {
     this.transporter = nodemailer.createTransport({
       service: 'SendGrid',
       auth: {
-        user: 'apikey',
-        pass: '', // Tu API key de SendGrid
+        user: this.configService.get<string>('SENDGRID_API_USER'),
+        pass: this.configService.get<string>('SENDGRID_API_KEY'),
       },
     });
   }

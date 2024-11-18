@@ -1,4 +1,10 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 import { EstatusCorreo } from './estatus-correo.entity';
 
 @Entity('pre_registro')
@@ -21,9 +27,8 @@ export class PreRegistro {
   @Column({ length: 100, nullable: true })
   empresa: string;
 
-  @ManyToOne(() => EstatusCorreo)
-  @JoinColumn({ name: 'estatus_correo' })
-  estatus_correo: EstatusCorreo;
+  @Column()
+  estatus_correo: number;
 
   @Column({ default: true })
   estatus: boolean;
