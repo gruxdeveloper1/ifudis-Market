@@ -1,5 +1,10 @@
-// src/users/user.entity.ts
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
+// src/entities/user.entity.ts
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+} from 'typeorm';
 
 @Entity('users')
 export class User {
