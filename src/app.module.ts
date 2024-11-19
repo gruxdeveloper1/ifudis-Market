@@ -7,6 +7,7 @@ import { HttpExceptionFilter } from './exceptions/http-exception.filter';
 import { APP_FILTER, APP_PIPE } from '@nestjs/core';
 import { CategoriesModule } from './categorias/categories.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     PreRegistroModule,
     UsersModule,
     CategoriesModule,
+    AuthModule,
     CategoriaProveedorModule,
   ],
   providers: [

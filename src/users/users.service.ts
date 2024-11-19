@@ -1,11 +1,9 @@
-// src/users/users.service.ts
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { User } from 'src/entities/user.entity';
-import * as bcrypt from 'bcrypt';
-import * as crypto from 'crypto';
-import * as nodemailer from 'nodemailer';
+import { User } from '../entities/user.entity';
+import { CreateUserDto } from '../dto/create-user.dto';
+import { PasswordUtil } from 'src/utils/password.util';
 
 @Injectable()
 export class UsersService {
@@ -14,94 +12,54 @@ export class UsersService {
     private readonly userRepository: Repository<User>,
   ) {}
 
-  async create(user: Partial<User>): Promise<User> {
-    // Verifica si el usuario tiene una contraseña y encríptala
-    if (user.contraseña) {
-      const saltRounds = 10;
-      user.contraseña = await bcrypt.hash(user.contraseña, saltRounds);
-    }
+  // Crear un nuevo usuario
+  async create(createUserDto: CreateUserDto): Promise<User> {
+    // Generar una contraseña aleatoria
+    const randomPassword = PasswordUtil.generateRandomPassword();
+    console.log('Contraseña generada:', randomPassword);
 
-    // Crea el nuevo usuario con los datos recibidos
-    const newUser = this.userRepository.create(user);
+    // Encriptar la contraseña
+    const hashedPassword = await PasswordUtil.hashPassword(randomPassword);
 
-    // Guarda el usuario en la base de datos
-    return this.userRepository.save(newUser);
+    // Guardar el usuario con la contraseña encriptada
+    const user = this.userRepository.create({
+      ...createUserDto,
+      contraseña: hashedPassword,
+    });
+
+    return this.userRepository.save(user);
   }
-
+  // Obtener todos los usuarios
   async findAll(): Promise<User[]> {
     return this.userRepository.find();
   }
 
+  // Obtener un usuario por ID
   async findOne(id: number): Promise<User> {
-    return this.userRepository.findOneBy({ id_usuario: id });
-  }
-
-  async update(id: number, userData: Partial<User>): Promise<User> {
-    await this.userRepository.update(id, userData);
-    return this.userRepository.findOneBy({ id_usuario: id });
-  }
-
-  async delete(id: number): Promise<void> {
-    await this.userRepository.delete(id);
-  }
-
-  async sendNewPassword(email: string): Promise<string> {
-    // Buscar al usuario por correo electrónico
-    const user = await this.userRepository.findOne({ where: { email } });
-
+    const user = await this.userRepository.findOneBy({ id_usuario: id });
     if (!user) {
-      throw new NotFoundException({
-        statusCode: 404,
-        message: 'Usuario no encontrado',
-        error: 'Not Found',
-      });
+      throw new NotFoundException('Usuario no encontrado');
     }
-
-    // Generar una nueva contraseña aleatoria
-    const newPassword = this.generateRandomPassword();
-
-    // Encriptar la nueva contraseña
-    const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
-
-    // Actualizar la contraseña en la base de datos
-    user.contraseña = hashedPassword;
-    await this.userRepository.save(user);
-
-    // Enviar la nueva contraseña por correo
-    await this.sendPasswordByEmail(user.email, newPassword);
-
-    return 'Se ha enviado una nueva contraseña a su correo.';
+    return user;
   }
 
-  // Método para generar una contraseña aleatoria de 8 caracteres
-  private generateRandomPassword(): string {
-    return crypto.randomBytes(4).toString('hex'); // Genera una cadena de 8 caracteres hexadecimales
+  // Actualizar un usuario
+  async update(
+    id: number,
+    updateUserDto: Partial<CreateUserDto>,
+  ): Promise<User> {
+    await this.userRepository.update(id, updateUserDto);
+    return this.findOne(id);
   }
 
-  // Método para enviar la contraseña por correo
-  private async sendPasswordByEmail(
-    email: string,
-    password: string,
-  ): Promise<void> {
-    // Configura el transporte del correo
-    const transporter = nodemailer.createTransport({
-      service: 'SendGrid', // O el servicio de correo que uses
-      auth: {
-        user: 'apikey',
-        pass: '',
-      },
-    });
+  // Eliminar un usuario
+  async remove(id: number): Promise<void> {
+    const user = await this.findOne(id);
+    await this.userRepository.remove(user);
+  }
 
-    // Configura el contenido del correo
-    const mailOptions = {
-      from: 'gruxdeveloper1@gmail.com',
-      to: email,
-      subject: 'Tu nueva contraseña',
-      text: `Tu nueva contraseña es: ${password}`,
-    };
-
-    // Enviar el correo
-    await transporter.sendMail(mailOptions);
+  // Buscar por email
+  async findByEmail(email: string): Promise<User> {
+    return this.userRepository.findOneBy({ email });
   }
 }
