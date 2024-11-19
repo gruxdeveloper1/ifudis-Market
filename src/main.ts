@@ -7,6 +7,12 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalFilters(new QueryFailedFilter());
 
+app.enableCors({
+    origin: '*', // Cambia esto por el dominio que necesites
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
+  });
+
   const config = new DocumentBuilder()
     .setTitle('Documentacion Ifudis-Marketplace')
     .setDescription(' API description')
