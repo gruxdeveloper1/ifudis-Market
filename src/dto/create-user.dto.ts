@@ -15,11 +15,6 @@ export class CreateUserDto {
   @IsEmail()
   email: string;
 
-  @ApiProperty({ description: 'Contraseña', example: 'password123' })
-  @IsString()
-  @Length(8, 255)
-  contraseña: string;
-
   @ApiProperty({
     description: 'Tipo de usuario',
     example: 'restaurante',
