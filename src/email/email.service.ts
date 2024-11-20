@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import * as nodemailer from 'nodemailer';
 import { ConfigService } from '@nestjs/config';
+import * as nodemailer from 'nodemailer';
 
 @Injectable()
 export class EmailService {
@@ -22,7 +22,7 @@ export class EmailService {
       to,
       subject,
       text,
-      cc: 'adaempe@gmail.com',
+      cc: 'gruxdesign@gmail.com ',
     };
 
     try {
