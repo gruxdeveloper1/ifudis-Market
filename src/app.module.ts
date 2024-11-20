@@ -1,13 +1,15 @@
 import { Module, ValidationPipe } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { UsersModule } from './users/users.module';
-import { PreRegistroModule } from './preRegistro/pre-registro.module';
-import { CategoriaProveedorModule } from './categoriaProveedor/categoria-proveedor.module';
-import { HttpExceptionFilter } from './exceptions/http-exception.filter';
-import { APP_FILTER, APP_PIPE } from '@nestjs/core';
-import { CategoriesModule } from './categorias/categories.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { APP_FILTER, APP_PIPE } from '@nestjs/core';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
+import { CategoriaProveedorModule } from './categoriaProveedor/categoria-proveedor.module';
+import { CategoriesModule } from './categorias/categories.module';
+import { CompanyModule } from './empresa/company.module';
+import { HttpExceptionFilter } from './exceptions/http-exception.filter';
+import { PreRegistroModule } from './preRegistro/pre-registro.module';
+import { LocationsModule } from './ubicacion/ubicacion.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -34,6 +36,8 @@ import { AuthModule } from './auth/auth.module';
     CategoriesModule,
     AuthModule,
     CategoriaProveedorModule,
+    CompanyModule,
+    LocationsModule,
   ],
   providers: [
     // Configuración global de validación con ValidationPipe

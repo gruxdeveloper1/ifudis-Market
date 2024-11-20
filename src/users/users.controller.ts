@@ -9,8 +9,9 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateUserDto } from 'src/dto/create-user.dto';
+import { ResetPasswordDto } from 'src/dto/reset-password.dto';
 import { UsersService } from './users.service';
 
 @ApiTags('users')
@@ -56,6 +57,18 @@ export class UsersController {
   }
 
   @Post('reset-password')
+  @ApiBody({
+    description: 'Token de recuperación y nueva contraseña del usuario',
+    type: ResetPasswordDto,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Contraseña actualizada exitosamente',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Token inválido o expirado',
+  })
   async resetPassword(
     @Body('token') token: string,
     @Body('password') newPassword: string,

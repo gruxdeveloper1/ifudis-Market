@@ -1,6 +1,6 @@
 // src/dto/create-user.dto.ts
-import { IsString, IsEmail, IsOptional, IsIn, Length } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { IsEmail, IsIn, IsOptional, IsString, Length } from 'class-validator';
 
 export class CreateUserDto {
   @ApiProperty({ description: 'Nombre de usuario', example: 'johndoe' })
@@ -17,7 +17,7 @@ export class CreateUserDto {
 
   @ApiProperty({
     description: 'Tipo de usuario',
-    example: 'restaurante',
+    example: 'proveedor',
     enum: ['restaurante', 'proveedor', 'admin'],
   })
   @IsIn(['restaurante', 'proveedor', 'admin'])
