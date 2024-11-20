@@ -1,64 +1,114 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
+import * as bcrypt from 'bcrypt'; // Para cifrar las contraseñas
+import { CreateUserDto } from 'src/dto/create-user.dto'; // Asegúrate de tener el DTO correcto
+import { UpdateUserDto } from 'src/dto/update-user.dto'; // Asegúrate de tener el DTO correcto
+import { EmailService } from 'src/email/email.service';
+import { User } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';
-import { User } from '../entities/user.entity';
-import { CreateUserDto } from '../dto/create-user.dto';
-import { PasswordUtil } from 'src/utils/password.util';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    private readonly emailService: EmailService,
+    private readonly jwtService: JwtService,
   ) {}
 
-  // Crear un nuevo usuario
   async create(createUserDto: CreateUserDto): Promise<User> {
-    // Generar una contraseña aleatoria
-    const randomPassword = PasswordUtil.generateRandomPassword();
-    console.log('Contraseña generada:', randomPassword);
+    const newUser = this.userRepository.create(createUserDto);
 
-    // Encriptar la contraseña
-    const hashedPassword = await PasswordUtil.hashPassword(randomPassword);
+    // Generar un token único para resetear contraseña
+    const token = this.jwtService.sign(
+      { email: newUser.email },
+      { expiresIn: '1h' }, // Token válido por 1 hora
+    );
+    newUser.token_reset_password = token;
 
-    // Guardar el usuario con la contraseña encriptada
-    const user = this.userRepository.create({
-      ...createUserDto,
-      contraseña: hashedPassword,
+    // Guardar el usuario sin contraseña
+    const user = await this.userRepository.save(newUser);
+
+    // Enviar el correo
+    const resetPasswordUrl = `http://your-frontend-url/reset-password?token=${token}`;
+    const subject = 'Configura tu contraseña';
+    const text = `Hola ${user.nombre_usuario},\n\nPor favor haz clic en el siguiente enlace para configurar tu contraseña:\n\n${resetPasswordUrl}\n\nEste enlace es válido por 1 hora.`;
+
+    await this.emailService.sendConfirmationEmail(user.email, subject, text);
+
+    return user;
+  }
+
+  // Método para encontrar un usuario por su email
+  async findOneByEmail(email: string): Promise<User> {
+    const user = await this.userRepository.findOne({
+      where: { email },
     });
+
+    if (!user) {
+      throw new NotFoundException('Usuario no encontrado');
+    }
+
+    return user;
+  }
+
+  // Método para actualizar la contraseña del usuario
+  async updatePassword(email: string, newPassword: string): Promise<void> {
+    const user = await this.userRepository.findOne({
+      where: { email },
+    });
+
+    if (!user) {
+      throw new NotFoundException('Usuario no encontrado');
+    }
+
+    // Cifrar la nueva contraseña antes de almacenarla
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Actualizar la contraseña del usuario
+    user.contraseña = hashedPassword;
+
+    await this.userRepository.save(user);
+  }
+
+  // Método para actualizar los datos de un usuario
+  async update(
+    id_usuario: number,
+    updateUserDto: UpdateUserDto,
+  ): Promise<User> {
+    const user = await this.userRepository.findOne({
+      where: { id_usuario },
+    });
+
+    if (!user) {
+      throw new NotFoundException('Usuario no encontrado');
+    }
+
+    // Actualizar los datos del usuario
+    Object.assign(user, updateUserDto);
 
     return this.userRepository.save(user);
   }
-  // Obtener todos los usuarios
+
+  // Método para obtener todos los usuarios
   async findAll(): Promise<User[]> {
     return this.userRepository.find();
   }
 
-  // Obtener un usuario por ID
-  async findOne(id: number): Promise<User> {
-    const user = await this.userRepository.findOneBy({ id_usuario: id });
+  // Método para eliminar un usuario por su ID
+  async remove(id_usuario: number): Promise<void> {
+    const user = await this.userRepository.findOne({
+      where: { id_usuario },
+    });
+
     if (!user) {
       throw new NotFoundException('Usuario no encontrado');
     }
-    return user;
-  }
 
-  // Actualizar un usuario
-  async update(
-    id: number,
-    updateUserDto: Partial<CreateUserDto>,
-  ): Promise<User> {
-    await this.userRepository.update(id, updateUserDto);
-    return this.findOne(id);
-  }
-
-  // Eliminar un usuario
-  async remove(id: number): Promise<void> {
-    const user = await this.findOne(id);
     await this.userRepository.remove(user);
   }
 
-  // Buscar por email
   async findByEmail(email: string): Promise<User> {
     return this.userRepository.findOneBy({ email });
   }
