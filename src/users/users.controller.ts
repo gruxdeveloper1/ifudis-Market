@@ -69,10 +69,10 @@ export class UsersController {
     status: 401,
     description: 'Token inválido o expirado',
   })
-  async resetPassword(
-    @Body('token') token: string,
-    @Body('password') newPassword: string,
-  ) {
+  async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
+    const { token, password: newPassword } = resetPasswordDto;
+
+    console.log('Token:', token, 'Nueva contraseña:', newPassword);
     let payload;
     try {
       // Verificar el token
