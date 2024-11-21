@@ -23,7 +23,7 @@ export class UsersService {
     // Generar un token único para resetear contraseña
     const token = this.jwtService.sign(
       { email: newUser.email },
-      { expiresIn: '1h' }, // Token válido por 1 hora
+      { expiresIn: '3h' }, // Token válido por 1 hora
     );
     newUser.token_reset_password = token;
 
@@ -31,7 +31,7 @@ export class UsersService {
     const user = await this.userRepository.save(newUser);
 
     // Enviar el correo
-    const resetPasswordUrl = `http://your-frontend-url/reset-password?token=${token}`;
+    const resetPasswordUrl = `https://polite-trifle-fa6dd5.netlify.app?token=${token}`;
     const subject = 'Configura tu contraseña';
     const text = `Hola ${user.nombre_usuario},\n\nPor favor haz clic en el siguiente enlace para configurar tu contraseña:\n\n${resetPasswordUrl}\n\nEste enlace es válido por 1 hora.`;
 
