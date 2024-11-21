@@ -11,5 +11,5 @@ export class ResetPasswordDto {
     description: 'Nueva contraseña del usuario',
     type: String,
   })
-  newPassword: string;
+  password: string;
 }

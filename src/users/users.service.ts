@@ -58,6 +58,7 @@ export class UsersService {
     const user = await this.userRepository.findOne({
       where: { email },
     });
+    console.log(newPassword);
 
     if (!user) {
       throw new NotFoundException('Usuario no encontrado');
