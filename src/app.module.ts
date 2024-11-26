@@ -2,6 +2,7 @@ import { Module, ValidationPipe } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_FILTER, APP_PIPE } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { AlcanceEmpresaModule } from './alcanceEmpresa/alcance-empresa.module';
 import { AuthModule } from './auth/auth.module';
 import { CategoriaProveedorModule } from './categoriaProveedor/categoria-proveedor.module';
 import { CategoriesModule } from './categorias/categories.module';
@@ -39,6 +40,7 @@ import { ZonaCoberturaModule } from './zonaCobertura/zona-cobertura.module';
     CompanyModule,
     LocationsModule,
     ZonaCoberturaModule,
+    AlcanceEmpresaModule,
   ],
   providers: [
     // Configuración global de validación con ValidationPipe
