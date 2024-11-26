@@ -10,7 +10,7 @@ import { HttpExceptionFilter } from './exceptions/http-exception.filter';
 import { PreRegistroModule } from './preRegistro/pre-registro.module';
 import { LocationsModule } from './ubicacion/ubicacion.module';
 import { UsersModule } from './users/users.module';
-
+import { ZonaCoberturaModule } from './zonaCobertura/zona-cobertura.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -38,6 +38,7 @@ import { UsersModule } from './users/users.module';
     CategoriaProveedorModule,
     CompanyModule,
     LocationsModule,
+    ZonaCoberturaModule,
   ],
   providers: [
     // Configuración global de validación con ValidationPipe
