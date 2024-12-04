@@ -1,6 +1,6 @@
 // src/categories/dto/create-category.dto.ts
-import { IsString, IsBoolean, IsNotEmpty } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { IsBoolean, IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateCategoryDto {
   @ApiProperty()
@@ -15,4 +15,8 @@ export class CreateCategoryDto {
   @ApiProperty()
   @IsBoolean()
   readonly estatus: boolean;
+
+  @ApiProperty()
+  @IsString()
+  readonly itbms: string;
 }
