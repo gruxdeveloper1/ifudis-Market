@@ -6,11 +6,12 @@ import { AlcanceEmpresaModule } from './alcanceEmpresa/alcance-empresa.module';
 import { AuthModule } from './auth/auth.module';
 import { CategoriaProveedorModule } from './categoriaProveedor/categoria-proveedor.module';
 import { CategoriesModule } from './categorias/categories.module';
-import { ConfiguracionMetodoPagoModule } from './configMetodoPago/configuracion-metodo-pago.module'; // Importamos ConfiguracionMetodoPagoModule
+import { ConfiguracionMetodoPagoModule } from './configMetodoPago/configuracion-metodo-pago.module';
 import { CompanyModule } from './empresa/company.module';
 import { HttpExceptionFilter } from './exceptions/http-exception.filter';
-import { MetodoPagoModule } from './metodosPagos/metodo-pago.module'; // Importamos MetodoPagoModule
+import { MetodoPagoModule } from './metodosPagos/metodo-pago.module';
 import { PreRegistroModule } from './preRegistro/pre-registro.module';
+import { ProductoModule } from './producto/producto.module';
 import { LocationsModule } from './ubicacion/ubicacion.module';
 import { UsersModule } from './users/users.module';
 import { ZonaCoberturaModule } from './zonaCobertura/zona-cobertura.module';
@@ -46,6 +47,7 @@ import { ZonaCoberturaModule } from './zonaCobertura/zona-cobertura.module';
     AlcanceEmpresaModule,
     MetodoPagoModule,
     ConfiguracionMetodoPagoModule,
+    ProductoModule,
   ],
   providers: [
     // Configuración global de validación con ValidationPipe
