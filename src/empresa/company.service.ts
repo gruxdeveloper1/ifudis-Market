@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BusinessDto } from 'src/dto/create-company.dto';
 import { Company } from 'src/entities/company.entity';
@@ -21,5 +21,17 @@ export class CompanyService {
 
     // Guardar la entidad con relaciones
     return this.companyRepository.save(newCompany);
+  }
+
+  async findAll(): Promise<Company[]> {
+    return this.companyRepository.find();
+  }
+
+  async findOne(id: number): Promise<Company> {
+    const company = await this.companyRepository.findOne({ where: { id } });
+    if (!company) {
+      throw new NotFoundException('Empresa no encontrada');
+    }
+    return company;
   }
 }
