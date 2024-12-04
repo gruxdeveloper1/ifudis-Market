@@ -1,6 +1,6 @@
 // src/dto/create-categoria-proveedor.dto.ts
-import { IsInt, IsArray, ArrayNotEmpty } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { ArrayNotEmpty, IsArray, IsInt } from 'class-validator';
 
 export class CreateCategoriaProveedorDto {
   @ApiProperty({
