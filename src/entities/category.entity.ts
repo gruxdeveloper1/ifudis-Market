@@ -1,5 +1,5 @@
 // src/categories/entities/category.entity.ts
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('categoria')
 export class Category {
@@ -11,6 +11,9 @@ export class Category {
 
   @Column({ type: 'varchar', nullable: false })
   descripcion: string;
+
+  @Column({ type: 'varchar', nullable: true })
+  itbms?: string;
 
   @Column({ default: true })
   estatus: boolean;
