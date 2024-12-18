@@ -1,11 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty, IsString } from 'class-validator';
+import { Category } from 'src/entities/category.entity';
 
 export class CreateProductoDto {
   @ApiProperty()
   nombre: string;
 
   @ApiProperty()
-  id_categoria: number;
+  categoria: Category;
 
   @ApiProperty({ enum: ['stock', 'agotado'], default: 'stock' })
   inventario: 'stock' | 'agotado';
@@ -16,9 +18,29 @@ export class CreateProductoDto {
   @ApiProperty()
   precio: number;
 
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  sku: string;
+
   @ApiProperty({
-    enum: ['unidad', 'kilogramos', 'gramos'],
-    default: 'kilogramos',
+    enum: [
+      'unidad',
+      'libra',
+      'kilogramos',
+      'gramo',
+      'litro',
+      'Mililitro',
+      'Onzas',
+    ],
+    default: 'unidad',
   })
-  presentacion: 'unidad' | 'kilogramos' | 'gramos';
+  presentacion:
+    | 'unidad'
+    | 'libra'
+    | 'kilogramos'
+    | 'gramo'
+    | 'litro'
+    | 'Mililitro'
+    | 'Onzas';
 }
