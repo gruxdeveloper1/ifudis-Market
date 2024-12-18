@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateProductoDto } from 'src/dto/create-producto.dto';
 import { Producto } from 'src/entities/producto.entity';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 
 @Injectable()
 export class ProductoService {
@@ -44,5 +44,13 @@ export class ProductoService {
   // Eliminar un producto
   async remove(id: number): Promise<void> {
     await this.productoRepository.delete(id);
+  }
+  async searchProductosByName(searchTerm: string): Promise<Producto[]> {
+    console.log('Buscando productos por nombre con el término:', searchTerm); // Verifica que esto se imprima
+    return this.productoRepository.find({
+      where: {
+        nombre: ILike(`%${searchTerm}%`), // Buscar solo por nombre
+      },
+    });
   }
 }

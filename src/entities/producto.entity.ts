@@ -1,4 +1,12 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+
+import { Category } from './category.entity';
 
 @Entity('productos')
 export class Producto {
@@ -8,10 +16,9 @@ export class Producto {
   @Column()
   nombre: string;
 
-  /*@ManyToOne(() => Category) // Relación con la categoría
-  @JoinColumn({ name: 'id_categoria' })*/
-  @Column()
-  id_categoria: number;
+  @ManyToOne(() => Category, (categoria) => categoria.productos)
+  @JoinColumn({ name: 'id_categoria' }) // Especificamos la columna que contiene la clave foránea
+  categoria: Category; // Esto es lo que antes causaba el error
 
   @Column({ type: 'enum', enum: ['stock', 'agotado'], default: 'stock' }) // Estatus del inventario
   inventario: 'stock' | 'agotado';
@@ -22,10 +29,28 @@ export class Producto {
   @Column('decimal', { precision: 10, scale: 2 }) // Precio del producto
   precio: number;
 
+  @Column({ unique: true })
+  sku: string;
+
   @Column({
     type: 'enum',
-    enum: ['unidad', 'kilogramos', 'gramos'],
+    enum: [
+      'unidad',
+      'libra',
+      'kilogramos',
+      'gramo',
+      'litro',
+      'Mililitro',
+      'Onzas',
+    ],
     default: 'unidad',
   }) // Presentación del producto
-  presentacion: 'unidad' | 'kilogramos' | 'gramos';
+  presentacion:
+    | 'unidad'
+    | 'libra'
+    | 'kilogramos'
+    | 'gramo'
+    | 'litro'
+    | 'Mililitro'
+    | 'Onzas';
 }

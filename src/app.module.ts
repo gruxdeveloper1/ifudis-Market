@@ -4,6 +4,8 @@ import { APP_FILTER, APP_PIPE } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AlcanceEmpresaModule } from './alcanceEmpresa/alcance-empresa.module';
 import { AuthModule } from './auth/auth.module';
+import { UploadsController } from './cargaImagenes/s3.controller';
+import { S3Service } from './cargaImagenes/s3.service';
 import { CategoriaProveedorModule } from './categoriaProveedor/categoria-proveedor.module';
 import { CategoriesModule } from './categorias/categories.module';
 import { ConfiguracionMetodoPagoModule } from './configMetodoPago/configuracion-metodo-pago.module';
@@ -15,7 +17,6 @@ import { ProductoModule } from './producto/producto.module';
 import { LocationsModule } from './ubicacion/ubicacion.module';
 import { UsersModule } from './users/users.module';
 import { ZonaCoberturaModule } from './zonaCobertura/zona-cobertura.module';
-
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -34,6 +35,7 @@ import { ZonaCoberturaModule } from './zonaCobertura/zona-cobertura.module';
         database: configService.get<string>('DATABASE_NAME'),
         synchronize: true, // ¡Ojo! Usar `synchronize: true` solo en desarrollo
         autoLoadEntities: true,
+        logging: true,
       }),
     }),
     PreRegistroModule,
@@ -49,7 +51,9 @@ import { ZonaCoberturaModule } from './zonaCobertura/zona-cobertura.module';
     ConfiguracionMetodoPagoModule,
     ProductoModule,
   ],
+  controllers: [UploadsController],
   providers: [
+    S3Service,
     // Configuración global de validación con ValidationPipe
     {
       provide: APP_PIPE,

@@ -7,7 +7,7 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
-import { ApiBody, ApiResponse } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
 import { CreateProductoDto } from 'src/dto/create-producto.dto';
 import { Producto } from 'src/entities/producto.entity';
 import { ProductoService } from './producto.service';
@@ -72,5 +72,23 @@ export class ProductoController {
   @ApiResponse({ status: 200, description: 'Producto eliminado exitosamente' })
   async remove(@Param('id') id: number): Promise<void> {
     return this.productoService.remove(id);
+  }
+
+  @Get('search/:term')
+  @ApiOperation({ summary: 'Buscar productos por nombre' })
+  @ApiParam({
+    name: 'term',
+    required: true,
+    type: String,
+    description: 'Término de búsqueda',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Productos encontrados',
+    type: [Producto],
+  })
+  async search(@Param('term') term: string): Promise<Producto[]> {
+    console.log('Término de búsqueda recibido:', term); // Verifica que esto se imprima
+    return this.productoService.searchProductosByName(term);
   }
 }
