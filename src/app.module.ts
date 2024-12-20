@@ -33,6 +33,7 @@ import { ZonaCoberturaModule } from './zonaCobertura/zona-cobertura.module';
         username: configService.get<string>('DATABASE_USER'),
         password: configService.get<string>('DATABASE_PASSWORD'),
         database: configService.get<string>('DATABASE_NAME'),
+        ssl:{rejectUnauthorized: false,},
         synchronize: true, // ¡Ojo! Usar `synchronize: true` solo en desarrollo
         autoLoadEntities: true,
         logging: true,
