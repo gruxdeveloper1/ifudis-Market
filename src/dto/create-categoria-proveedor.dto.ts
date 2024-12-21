@@ -12,7 +12,7 @@ export class CreateCategoriaProveedorDto {
 
   @ApiProperty({
     description: 'Lista de IDs de categorías a asignar al pre-registro.',
-    example: [1, 2, 3],
+    example: [2, 3],
   })
   @IsArray()
   @ArrayNotEmpty()
