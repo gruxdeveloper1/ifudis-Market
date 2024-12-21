@@ -4,10 +4,10 @@ import {
   Get,
   NotFoundException,
   Param,
+  Patch,
   Post,
-  Put,
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateCategoriaProveedorDto } from 'src/dto/create-categoria-proveedor.dto';
 import { UpdateCategoriaProveedorDto } from 'src/dto/update-categoria-proveedor.dto';
 import { CategoriaProveedor } from 'src/entities/categoria-proveedor.entity';
@@ -52,11 +52,14 @@ export class CategoriaProveedorController {
     return categorias;
   }
 
-  @Put(':id_pre_registro')
+  @Patch(':id_pre_registro')
   @ApiOperation({ summary: 'Actualizar categorías por ID de pre-registro' })
   @ApiResponse({
     status: 200,
     description: 'Categorías actualizadas exitosamente.',
+  })
+  @ApiBody({
+    type: UpdateCategoriaProveedorDto,
   })
   @ApiResponse({
     status: 404,
@@ -64,18 +67,20 @@ export class CategoriaProveedorController {
   })
   async updateByIdPreRegistro(
     @Param('id_pre_registro') id_pre_registro: number,
-    @Body() updateCategoriaProveedorDto: UpdateCategoriaProveedorDto,
+    @Body('id_categorias') id_categorias: number[],
   ): Promise<CategoriaProveedor[]> {
     const updatedCategorias =
       await this.categoriaProveedorService.updateByIdPreRegistro(
         id_pre_registro,
-        updateCategoriaProveedorDto,
+        id_categorias,
       );
+
     if (!updatedCategorias || updatedCategorias.length === 0) {
       throw new NotFoundException(
         'No se encontraron categorías para actualizar.',
       );
     }
+
     return updatedCategorias;
   }
 }

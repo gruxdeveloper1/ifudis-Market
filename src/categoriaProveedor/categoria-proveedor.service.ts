@@ -2,7 +2,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateCategoriaProveedorDto } from 'src/dto/create-categoria-proveedor.dto';
-import { UpdateCategoriaProveedorDto } from 'src/dto/update-categoria-proveedor.dto';
 import { CategoriaProveedor } from 'src/entities/categoria-proveedor.entity';
 import { Category } from 'src/entities/category.entity';
 import { PreRegistro } from 'src/entities/pre-registro.entity';
@@ -60,28 +59,42 @@ export class CategoriaProveedorService {
       relations: ['preRegistro', 'categoria'], // Incluye relaciones si necesitas datos adicionales
     });
   }
-
   async updateByIdPreRegistro(
     id_pre_registro: number,
-    updateCategoriaProveedorDto: UpdateCategoriaProveedorDto,
+    id_categorias: number[],
   ): Promise<CategoriaProveedor[]> {
-    // Filtra por la relación 'preRegistro' y su campo 'id'
-    const categorias = await this.categoriaProveedorRepository.find({
-      where: {
-        preRegistro: { id_pre_registro: id_pre_registro }, // Accede a 'id_pre_registro' de la relación 'preRegistro'
-      },
-      relations: ['preRegistro', 'categoria'], // Incluye relaciones si necesitas datos adicionales
+    console.log('ID Pre Registro recibido:', id_pre_registro);
+    console.log('IDs de Categorías recibidos:', id_categorias);
+
+    // Verificar si el pre-registro existe
+    const preRegistro = await this.preRegistroRepository.findOne({
+      where: { id_pre_registro },
     });
 
-    if (!categorias || categorias.length === 0) {
-      return [];
+    if (!preRegistro) {
+      throw new NotFoundException('El pre-registro especificado no existe.');
     }
 
-    for (const categoria of categorias) {
-      Object.assign(categoria, updateCategoriaProveedorDto);
-      await this.categoriaProveedorRepository.save(categoria);
-    }
+    // Eliminar relaciones existentes para el pre-registro
+    await this.categoriaProveedorRepository.delete({
+      preRegistro,
+    });
 
-    return categorias;
+    // Obtener las instancias de Categoria
+    const categorias = await this.categoryRepository.findByIds(id_categorias);
+
+    // Crear nuevas relaciones con las instancias de PreRegistro y Categoria
+    const nuevasRelaciones = id_categorias.map((id_categoria) => {
+      return this.categoriaProveedorRepository.create({
+        preRegistro, // Pasar la instancia de PreRegistro
+        categoria: categorias.find((c) => c.id_categoria === id_categoria), // Encontrar la instancia de Categoria
+      });
+    });
+
+    const categoriasGuardadas =
+      await this.categoriaProveedorRepository.save(nuevasRelaciones);
+
+    console.log('Categorías actualizadas:', categoriasGuardadas);
+    return categoriasGuardadas;
   }
 }
