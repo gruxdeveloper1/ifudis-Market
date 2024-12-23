@@ -18,7 +18,7 @@ export class EmailService {
 
   async sendConfirmationEmail(to: string, subject: string, text: string) {
     const mailOptions = {
-      from: 'gruxdeveloper1@gmail.com', // Dirección de correo verificada en SendGrid
+      from: 'adaempe@gmail.com', // Dirección de correo verificada en SendGrid
       to,
       subject,
       text,
