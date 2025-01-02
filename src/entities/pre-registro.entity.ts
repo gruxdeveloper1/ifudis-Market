@@ -32,4 +32,7 @@ export class PreRegistro {
 
   @Column({ default: true })
   estatus: boolean;
+
+  @Column({ length: 100, nullable: true })
+  observacion: string;
 }

@@ -59,4 +59,11 @@ export class CreatePreRegistroDto {
   @IsOptional()
   @IsBoolean()
   estatus?: boolean;
+
+
+  @ApiProperty({ description: 'Motivo del Rechazo', example: 'No cumple con los requisitos' })
+  @IsOptional()
+  @IsString()
+  observacion?: string;
+
 }

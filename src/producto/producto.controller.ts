@@ -11,6 +11,7 @@ import { ApiBody, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
 import { CreateProductoDto } from 'src/dto/create-producto.dto';
 import { Producto } from 'src/entities/producto.entity';
 import { ProductoService } from './producto.service';
+import { UpdateProductoDto } from 'src/dto/update-producto.dto';
 
 @Controller('productos')
 export class ProductoController {
@@ -54,7 +55,7 @@ export class ProductoController {
 
   // Actualizar un producto
   @Put(':id')
-  @ApiBody({ description: 'Actualizar un producto', type: CreateProductoDto })
+  @ApiBody({ description: 'Actualizar un producto', type: UpdateProductoDto })  // Usar el DTO de actualización
   @ApiResponse({
     status: 200,
     description: 'Producto actualizado',
@@ -62,7 +63,7 @@ export class ProductoController {
   })
   async update(
     @Param('id') id: number,
-    @Body() updateProductoDto: CreateProductoDto,
+    @Body() updateProductoDto: UpdateProductoDto,  // Usar el DTO de actualización
   ): Promise<Producto> {
     return this.productoService.update(id, updateProductoDto);
   }

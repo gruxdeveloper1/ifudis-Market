@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateProductoDto } from 'src/dto/create-producto.dto';
+import { UpdateProductoDto } from 'src/dto/update-producto.dto';
 import { Producto } from 'src/entities/producto.entity';
 import { ILike, Repository } from 'typeorm';
 
@@ -30,18 +31,24 @@ export class ProductoService {
   }
 
   // Actualizar un producto
-  async update(
-    id: number,
-    updateProductoDto: CreateProductoDto,
-  ): Promise<Producto> {
-    await this.productoRepository.update(id, updateProductoDto);
-    return this.productoRepository.findOne({
+  async update(id: number, updateProductoDto: UpdateProductoDto): Promise<Producto> {
+    const producto = await this.productoRepository.findOne({
       where: { id },
-      relations: ['categoria'],
     });
+
+    if (!producto) {
+      throw new NotFoundException(`Producto con ID ${id} no encontrado`);
+    }
+
+    Object.assign(producto, updateProductoDto);
+
+    try {
+      return await this.productoRepository.save(producto);
+    } catch (error) {
+      throw new BadRequestException('Error al actualizar el producto', error.message);
+    }
   }
 
-  // Eliminar un producto
   async remove(id: number): Promise<void> {
     await this.productoRepository.delete(id);
   }

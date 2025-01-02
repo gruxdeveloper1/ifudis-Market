@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreatePreRegistroDto } from 'src/dto/CreatePreRegistroDto';
 import { EmailService } from 'src/email/email.service';
 import { Repository } from 'typeorm';
 import { PreRegistro } from '../entities/pre-registro.entity';
+import { UpdatePreRegistroDto } from 'src/dto/UpdatePreRegistro.dto';
 
 @Injectable()
 export class PreRegistroService {
@@ -63,4 +64,48 @@ export class PreRegistroService {
   async findAll(): Promise<PreRegistro[]> {
     return this.preRegistroRepository.find();
   }
+
+  async findByIdPreRegistro(idPreRegistro: number): Promise<PreRegistro | null> {
+    return this.preRegistroRepository.findOne({ where: { id_pre_registro: idPreRegistro } });
+  }
+
+  async updateByIdPreRegistro(
+    idPreRegistro: number,
+    updatePreRegistroDto: UpdatePreRegistroDto,
+  ): Promise<PreRegistro | null> {
+    const preRegistro = await this.findByIdPreRegistro(idPreRegistro);
+    if (!preRegistro) return null;
+
+    const updatedPreRegistro = this.preRegistroRepository.merge(preRegistro, updatePreRegistroDto);
+    return this.preRegistroRepository.save(updatedPreRegistro);
+  }
+
+  async approvePreRegistro(idPreRegistro: number): Promise<PreRegistro> {
+    const preRegistro = await this.preRegistroRepository.findOne({ where: { id_pre_registro: idPreRegistro } });
+
+    if (!preRegistro) {
+      throw new NotFoundException('Pre-registro no encontrado.');
+    }
+
+    preRegistro.estatus = true; // Cambia el estatus a true
+    preRegistro.observacion = null; // Elimina cualquier observación previa
+    return this.preRegistroRepository.save(preRegistro);
+  }
+
+  async rejectPreRegistro(
+    idPreRegistro: number,
+    observacion: string,
+  ): Promise<PreRegistro> {
+    const preRegistro = await this.preRegistroRepository.findOne({ where: { id_pre_registro: idPreRegistro } });
+
+    if (!preRegistro) {
+      throw new NotFoundException('Pre-registro no encontrado.');
+    }
+
+    preRegistro.estatus = false; // Cambia el estatus a false si es necesario
+    preRegistro.observacion = observacion; // Agrega el motivo del rechazo
+    return this.preRegistroRepository.save(preRegistro);
+  }
+
+
 }
